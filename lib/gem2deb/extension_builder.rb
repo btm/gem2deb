@@ -57,7 +57,12 @@ module Gem2Deb
           exit(1)
         end
       begin
-        target = File.expand_path(File.join('debian', @package, RbConfig::CONFIG['vendorarchdir']))
+        if File::exists?('debian/extension_path.overrides')
+          extension_path = File.new('debian/extension_path.overrides').gets
+          target = File.expand_path(File.join('debian', @package, RbConfig::CONFIG['vendorarchdir'], extension_path))
+        else
+          target = File.expand_path(File.join('debian', @package, RbConfig::CONFIG['vendorarchdir']))
+        end
         Dir.chdir(directory) do
           rubygems_builder.build(extension, '.', target, results)
           puts results
